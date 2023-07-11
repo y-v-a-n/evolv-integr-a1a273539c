@@ -1,0 +1,19 @@
+{
+  "name": "@evolv-integr-a1a273539c/get-visitorid",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/y-v-a-n/evolv-integr-a1a273539c.git"
+  },
+  "author": "yvan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/y-v-a-n/evolv-integr-a1a273539c/issues"
+  },
+  "homepage": "https://github.com/y-v-a-n/evolv-integr-a1a273539c#readme",
+  "description": ""
+}
