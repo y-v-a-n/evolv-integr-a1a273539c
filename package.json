@@ -1,6 +1,6 @@
 {
-  "name": "@evolv-integr-a1a273539c/get-visitorid",
-  "version": "1.0.0",
+  "name": "@evolv-integr/a1a273539c",
+  "version": "1.0.4",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
