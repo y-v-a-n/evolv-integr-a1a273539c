@@ -13,12 +13,12 @@ Also added `seconds` and `minutes` and dealt with singular or plural on units, j
 
 | Time range | Bucket |
 |-|-|
-| New Visitor | New visitor |
-| 1 sec - 60 min | Less than an hour ago |
-| 1 hr - 24 h | Less than a day ago |
-| 24 h - 7 days | Less than a week ago |
-| 7 - 30 days | Less than 30 days ago |
-| > 30 days | More than 30 days ago |
+| New Visitor | `New visitor` |
+| 1 sec - 60 min | `Less than an hour ago` |
+| 1 hr - 24 h | `Less than a day ago` |
+| 24 h - 7 days | `Less than a week ago` |
+| 7 - 30 days | `Less than 30 days ago` |
+| > 30 days | `More than 30 days ago` |
 
 ### `vz.dayOfWeek` and `vz.timeOfDay`
 Sets these context variables, both based on `window.vzdl.utils.visitStart`. `vz.dayOfWeek` is set to the day of week the visit started, for example `Wednesday`. `vz.timeOfDay` is set to a 6-hour block of time, braking down the day in the following way, in local time:  
