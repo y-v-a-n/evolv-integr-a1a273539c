@@ -2,6 +2,12 @@ module.exports = function (config) {
     // console.log('a1a273539c integration ran');
     // console.log('with this config file: \n' + JSON.stringify(config));
 
+    var perf = {
+        url: window.location.href,
+        evolvExecutionStart: performance.now()
+    };
+    evolv.context.set('vz.performance', JSON.stringify(perf));
+
     // set the visitor ID
     // ==================
     // alloy() is an Adobe AEP async function returning a promise
@@ -56,7 +62,7 @@ module.exports = function (config) {
     //     weekday
     //     6h day part
     //         Early Morning            Midnight - 6:00 AM
-    //         Morning to Afternoon     6:0 AM - 12:00 PM
+    //         Morning to Afternoon     6:00 AM - 12:00 PM
     //         Afternoon to Evening     12:00 PM - 6:00 PM
     //         Evening to Late Night    6:00 PM - Midnight
     //
@@ -98,6 +104,82 @@ module.exports = function (config) {
         evolv.context.set('vz.partOfDay', partOfDay);
     })
     .catch(() => console.warn('window.vzdl.utils.dayOfWeek not set within timeout'))
+
+    // set the OS of the customer
+    // ==========================
+    //     could be any string, but is generally "Apple iOS" or "Android"
+    //
+    waitFor(() => window.vzdl?.park?.evolv?.accountDeviceOs, 10000)
+    .then(accountDeviceOs => {
+        evolv.context.set('vz.accountDeviceOs', accountDeviceOs);
+    })
+    .catch(() => console.warn('window.vzdl.park.evolv.accountDeviceOs not set within timeout'))
+
+    // set the customer billing state
+    // ==============================
+    //     two letter state abbreviation
+    //
+    waitFor(() => window.vzdl?.park?.evolv?.billingState, 10000)
+    .then(billingState => {
+        evolv.context.set('vz.billingState', billingState);
+    })
+    .catch(() => console.warn('window.vzdl.park.evolv.billingState not set within timeout'))
+
+    // set whether the customer's phone is upgrade eligible 
+    // ====================================================
+    //     true or false
+    //
+    waitFor(() => window.vzdl?.park?.evolv?.isUpgradeEligible, 10000)
+    .then(isUpgradeEligible => {
+        evolv.context.set('vz.isUpgradeEligible', isUpgradeEligible);
+    })
+    .catch(() => console.warn('window.vzdl.park.evolv.isUpgradeEligible not set within timeout'))
+
+    // set whether the customer's age bucket
+    // ====================================================
+    //     there are 8 buckets
+    //         <18 years   (AgeLevel1)
+    //         18-24 years (AgeLevel2)
+    //         25-34 years (AgeLevel3)
+    //         35-44 years (AgeLevel4)
+    //         45-54 years (AgeLevel5)
+    //         55-64 years (AgeLevel6)
+    //         >65 years   (AgeLevel7)
+    //         unknown     (Undefined)
+    //
+    waitFor(() => window.vzdl?.park?.evolv?.userAgeBucket, 10000)
+    .then(anonUserAgeBucket => {
+        var userAgeBucket = 'Invalid age level';
+
+        switch (anonUserAgeBucket) {
+            case 'AgeLevel1':
+                userAgeBucket = '<18 years';
+                break;
+            case 'AgeLevel2':
+                userAgeBucket = '18-24 years';
+                break;
+            case 'AgeLevel3':
+                userAgeBucket = '25-34 years';
+                break;
+            case 'AgeLevel4':
+                userAgeBucket = '35-44 years';
+                break;
+            case 'AgeLevel5':
+                userAgeBucket = '45-54 years';
+                break;
+            case 'AgeLevel6':
+                userAgeBucket = '55-64 years';
+                break;
+            case 'AgeLevel7':
+                userAgeBucket = '>65 years';
+                break;
+            case 'Undefined':
+                userAgeBucket = 'unknown';
+                break;
+        }
+        evolv.context.set('vz.userAgeBucket', userAgeBucket);
+    })
+    .catch(() => console.warn('window.vzdl.park.evolv.userAgeBucket not set within timeout'))
 
     // Support functions
     function waitFor(callback, timeout = 5000, interval = 25) {

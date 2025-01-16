@@ -29,3 +29,32 @@ Sets these context variables, both based on `window.vzdl.utils.visitStart`. `vz.
 | 6:00 AM - 12:00 PM | `Morning to Afternoon` |
 | 12:00 PM - 6:00 PM | `Afternoon to Evening` |
 | 6:00 PM - Midnight | `Evening to Late Night` |
+
+### `vz.accountDeviceOs`
+Sets this context variable based on `window.vzdl.park.evolv.accountDeviceOs`. Example values for `window.vzdl.park.evolv.accountDeviceOs` are: 
+
+| Account Device OS |
+| ---------- |
+| `Apple iOS` |
+| `Android` |
+
+### `vz.billingState`
+Sets this context variable based on `window.vzdl.park.evolv.billingState`. `vz.billingState` is set to the two lettr state abbreviation, for example `CA`.
+
+### `vz.isUpgradeEligible`
+Sets this context variable based on `window.vzdl.park.evolv.isUpgradeEligible`. `vz.isUpgradeEligible` is a boolean that is set to either true or false.
+
+### `vz.userAgeBucket`
+Sets this context variable based on `window.vzdl.park.evolv.userAgeBucket`. `vz.userAgeBucket` is set according to the following table. The vzdl includes an anonymous age bucket that is translated into an actual age bucket.
+
+| Anonymous Age Bucket | Actual Age Bucket |
+| -------------------- | ----------------- |
+| `AgeLevel1` | `<18 years` |
+| `AgeLevel2` | `18-24 years` |
+| `AgeLevel3` | `25-34 years` |
+| `AgeLevel4` | `35-44 years` |
+| `AgeLevel5` | `45-54 years` |
+| `AgeLevel6` | `55-64 years` |
+| `AgeLevel7` | `>65 years` |
+| `Undefined` | `unknown` |
+
