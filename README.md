@@ -31,30 +31,79 @@ Sets these context variables, both based on `window.vzdl.utils.visitStart`. `vz.
 | 6:00 PM - Midnight | `Evening to Late Night` |
 
 ### `vz.accountDeviceOs`
-Sets this context variable based on `window.vzdl.park.evolv.accountDeviceOs`. Example values for `window.vzdl.park.evolv.accountDeviceOs` are: 
+Sets this context variable when at the following two URLs:  
+UAD page https://www.verizon.com/digital/nsa/secure/ui/udb/#/  
+MDN Selection page https://www.verizon.com/sales/nextgen/mdnselection.html?mtnFlow=M&fromGnav=true  
+Example values for are: 
 
-| Account Device OS |
-| ---------- |
+| Account Device OS | Comment |
+| ---------- | --- |
 | `Apple iOS` |
 | `Android` |
+| `null` | for a flip phone for instance |
 
 ### `vz.billingState`
-Sets this context variable based on `window.vzdl.park.evolv.billingState`. `vz.billingState` is set to the two lettr state abbreviation, for example `CA`.
+Sets this context variable when at the following two URLs:  
+UAD page https://www.verizon.com/digital/nsa/secure/ui/udb/#/  
+MDN Selection page https://www.verizon.com/sales/nextgen/mdnselection.html?mtnFlow=M&fromGnav=true  
+`vz.billingState` is set to the two lettr state abbreviation, for example `CA`.
 
 ### `vz.isUpgradeEligible`
-Sets this context variable based on `window.vzdl.park.evolv.isUpgradeEligible`. `vz.isUpgradeEligible` is a boolean that is set to either true or false.
+Sets this context variable when at the following two URLs:  
+UAD page https://www.verizon.com/digital/nsa/secure/ui/udb/#/  
+MDN Selection page https://www.verizon.com/sales/nextgen/mdnselection.html?mtnFlow=M&fromGnav=true  
+`vz.isUpgradeEligible` is a boolean that is set to either `true` or `false`, but it looks like `false` is never set by Verizon, so the values are really `true` or `null`.
 
 ### `vz.userAgeBucket`
-Sets this context variable based on `window.vzdl.park.evolv.userAgeBucket`. `vz.userAgeBucket` is set according to the following table. The vzdl includes an anonymous age bucket that is translated into an actual age bucket.
+Sets this context variable when at the following two URLs:  
+UAD page https://www.verizon.com/digital/nsa/secure/ui/udb/#/  
+MDN Selection page https://www.verizon.com/sales/nextgen/mdnselection.html?mtnFlow=M&fromGnav=true  
+Example values for are: 
+`vz.userAgeBucket` is set according to the following table. The vzdl includes an anonymous age bucket that is translated into an actual age bucket.
 
-| Anonymous Age Bucket | Actual Age Bucket |
-| -------------------- | ----------------- |
+| Anonymous Age Bucket | Actual Age Bucket | Comment |
+| -------------------- | ----------------- | ------- |
 | `AgeLevel1` | `<18 years` |
 | `AgeLevel2` | `18-24 years` |
 | `AgeLevel3` | `25-34 years` |
 | `AgeLevel4` | `35-44 years` |
 | `AgeLevel5` | `45-54 years` |
 | `AgeLevel6` | `55-64 years` |
-| `AgeLevel7` | `>65 years` |
+| `AgeLevel7` | `>65 years` | it's actually >= 65 |
 | `Undefined` | `unknown` |
 
+### vzdl Data Structures
+UAD page https://www.verizon.com/digital/nsa/secure/ui/udb/#/  
+
+```
+vzdl
+    park
+        evolv
+            billAccouts
+                billingState
+                mtns
+                    [1..]
+                        deviceInfo
+                                category
+                                displayName
+                                operatingSystem
+                        upgradeEligible
+            userAgeBucket
+```                 
+
+MDN Selection page https://www.verizon.com/sales/nextgen/mdnselection.html?mtnFlow=M&fromGnav=true  
+
+```
+vzdl
+    park
+        evolv
+            billingState
+            accountDeviceOs
+            isUpgradeEligible
+            userAgeBucket
+```
+
+Data attributes on the MDN selection page pertain to the account holder. The account holder is assumed to be and is mapped to the first mtn on the UTM page.
+
+### Install
+npm publish

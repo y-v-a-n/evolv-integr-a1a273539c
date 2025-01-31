@@ -23,7 +23,7 @@ module.exports = function (config) {
             // nothing
         });
     })
-    .catch(() => console.warn('window.alloy not set within timeout'))
+    // .catch(() => console.warn('window.alloy not set within timeout'));
 
     // set the time since last visit
     // =============================
@@ -55,7 +55,7 @@ module.exports = function (config) {
         }
         evolv.context.set('vz.lastVisitBucket', lastVisitBucket);
     })
-    .catch(() => console.warn('window.vzdl.utils.lastVisit not set within timeout'))
+    // .catch(() => console.warn('window.vzdl.utils.lastVisit not set within timeout'));
 
     // set visit start
     // ===============
@@ -82,106 +82,82 @@ module.exports = function (config) {
         }
 
         let timeComponent = components.find(component => component.startsWith('time='));
+        if (timeComponent) {
+            let timeValue = timeComponent.split('=')[1];
 
-        // Convert the time string to a Date object
-        let date = new Date(`1/1/1970 ${timeComponent}`);
+            // Convert the time string to a Date object
+            let date = new Date(`1/1/1970 ${timeValue}`);
 
-        // Get the hour
-        let hour = date.getHours();
+            // Get the hour
+            let hour = date.getHours();
 
-        // Determine the part of the day
-        let partOfDay;
-        if (hour >= 0 && hour < 6) {
-            partOfDay = 'Early Morning';
-        } else if (hour >= 6 && hour < 12) {
-            partOfDay = 'Morning to Afternoon';
-        } else if (hour >= 12 && hour < 18) {
-            partOfDay = 'Afternoon to Evening';
-        } else {
-            partOfDay = 'Evening to Late Night';
+            // Determine the part of the day
+            let partOfDay;
+            if (hour >= 0 && hour < 6) {
+                partOfDay = 'Early Morning';
+            } else if (hour >= 6 && hour < 12) {
+                partOfDay = 'Morning to Afternoon';
+            } else if (hour >= 12 && hour < 18) {
+                partOfDay = 'Afternoon to Evening';
+            } else {
+                partOfDay = 'Evening to Late Night';
+            }
+
+            evolv.context.set('vz.partOfDay', partOfDay);
         }
-
-        evolv.context.set('vz.partOfDay', partOfDay);
     })
-    .catch(() => console.warn('window.vzdl.utils.dayOfWeek not set within timeout'))
+    // .catch(() => console.warn('window.vzdl.utils.dayOfWeek not set within timeout'));
 
-    // set the OS of the customer
-    // ==========================
-    //     could be any string, but is generally "Apple iOS" or "Android"
+    // set billing state, OS, upgrade eligibility and age bucket of the customer
+    // =========================================================================
+    //     billing state: Two letter state abbreviation
+    //     OS: Could be any string, but is generally "Apple iOS" or "Android", it's null on flip phones
+    //     upgrade eligibility: true or false
+    //     age bucket: Converted from anonymous age buckets to age ranges
     //
-    waitFor(() => window.vzdl?.park?.evolv?.accountDeviceOs, 10000)
-    .then(accountDeviceOs => {
-        evolv.context.set('vz.accountDeviceOs', accountDeviceOs);
-    })
-    .catch(() => console.warn('window.vzdl.park.evolv.accountDeviceOs not set within timeout'))
+    //     these data attributes are set at as children of the vzdl evolv object for the account owner
+    
+    // UAD or MDN selection pages
+    if (location.href == 'https://www.verizon.com/digital/nsa/secure/ui/udb/#/' 
+            || location.href == 'https://www.verizon.com/sales/nextgen/mdnselection.html?mtnFlow=M&fromGnav=true' ) {
+        waitFor(() => window.vzdl?.park?.evolv, 10000)
+        .then(evolvNode => {
+            if (location.href == 'https://www.verizon.com/digital/nsa/secure/ui/udb/#/') { // UAD page
+                if (evolvNode.billAccounts) {
+                    if (evolvNode.billAccounts.billingState) {
+                        evolv.context.set('vz.billingState', evolvNode.billAccounts.billingState);
+                    }
+                    if (evolvNode.billAccounts.mtns) {
 
-    // set the customer billing state
-    // ==============================
-    //     two letter state abbreviation
-    //
-    waitFor(() => window.vzdl?.park?.evolv?.billingState, 10000)
-    .then(billingState => {
-        evolv.context.set('vz.billingState', billingState);
-    })
-    .catch(() => console.warn('window.vzdl.park.evolv.billingState not set within timeout'))
-
-    // set whether the customer's phone is upgrade eligible 
-    // ====================================================
-    //     true or false
-    //
-    waitFor(() => window.vzdl?.park?.evolv?.isUpgradeEligible, 10000)
-    .then(isUpgradeEligible => {
-        evolv.context.set('vz.isUpgradeEligible', isUpgradeEligible);
-    })
-    .catch(() => console.warn('window.vzdl.park.evolv.isUpgradeEligible not set within timeout'))
-
-    // set whether the customer's age bucket
-    // ====================================================
-    //     there are 8 buckets
-    //         <18 years   (AgeLevel1)
-    //         18-24 years (AgeLevel2)
-    //         25-34 years (AgeLevel3)
-    //         35-44 years (AgeLevel4)
-    //         45-54 years (AgeLevel5)
-    //         55-64 years (AgeLevel6)
-    //         >65 years   (AgeLevel7)
-    //         unknown     (Undefined)
-    //
-    waitFor(() => window.vzdl?.park?.evolv?.userAgeBucket, 10000)
-    .then(anonUserAgeBucket => {
-        var userAgeBucket = 'Invalid age level';
-
-        switch (anonUserAgeBucket) {
-            case 'AgeLevel1':
-                userAgeBucket = '<18 years';
-                break;
-            case 'AgeLevel2':
-                userAgeBucket = '18-24 years';
-                break;
-            case 'AgeLevel3':
-                userAgeBucket = '25-34 years';
-                break;
-            case 'AgeLevel4':
-                userAgeBucket = '35-44 years';
-                break;
-            case 'AgeLevel5':
-                userAgeBucket = '45-54 years';
-                break;
-            case 'AgeLevel6':
-                userAgeBucket = '55-64 years';
-                break;
-            case 'AgeLevel7':
-                userAgeBucket = '>65 years';
-                break;
-            case 'Undefined':
-                userAgeBucket = 'unknown';
-                break;
-        }
-        evolv.context.set('vz.userAgeBucket', userAgeBucket);
-    })
-    .catch(() => console.warn('window.vzdl.park.evolv.userAgeBucket not set within timeout'))
+                        const mtnsArray = evolvNode.billAccounts.mtns;
+                        mtnsArray.forEach((mtn, index) => {
+                            const contextIndex = index === 0 ? '' : (index + 1).toString();
+                            evolv.context.set('vz.accountDeviceOs' + contextIndex, mtn.deviceInfo?.operatingSystem);
+                            evolv.context.set('vz.isUpgradeEligible' + contextIndex, mtn.upgradeEligible);
+                        });
+                    }
+                }
+            } else if (location.href == 'https://www.verizon.com/sales/nextgen/mdnselection.html?mtnFlow=M&fromGnav=true'){ // MDN selection page
+                if (evolvNode.accountDeviceOs) { 
+                    evolv.context.set('vz.accountDeviceOs', evolvNode.accountDeviceOs);
+                }
+                if (evolvNode.billingState) {
+                    evolv.context.set('vz.billingState', evolvNode.billingState);
+                }
+                if (evolvNode.isUpgradeEligible) {
+                    evolv.context.set('vz.isUpgradeEligible', evolvNode.isUpgradeEligible);
+                }
+            }
+            if (evolvNode.userAgeBucket) {
+                evolv.context.set('vz.userAgeBucket', userAgeBucket(evolvNode.userAgeBucket));
+            }
+        })
+        // .catch(() => console.warn('Data attibs not set within timeout'));
+    }
 
     // Support functions
+    // =================
+
     function waitFor(callback, timeout = 5000, interval = 25) {
         return new Promise((resolve, reject) => {
             let poll;
@@ -221,5 +197,50 @@ module.exports = function (config) {
             default:
                 return null;
         }
+    }
+
+    // set the customer's age bucket
+    // ====================================================
+    //     there are 8 buckets
+    //         <18 years   (AgeLevel1)
+    //         18-24 years (AgeLevel2)
+    //         25-34 years (AgeLevel3)
+    //         35-44 years (AgeLevel4)
+    //         45-54 years (AgeLevel5)
+    //         55-64 years (AgeLevel6)
+    //         >65 years   (AgeLevel7)
+    //         unknown     (Undefined)
+    //
+    // this data attribute is the same for both the UAD and the MDN selection pages
+    function userAgeBucket(vzUserAgeBucket) {
+        var userAgeBucket = 'Invalid age level';
+
+        switch (vzUserAgeBucket) {
+            case 'AgeLevel1':
+                userAgeBucket = '<18 years';
+                break;
+            case 'AgeLevel2':
+                userAgeBucket = '18-24 years';
+                break;
+            case 'AgeLevel3':
+                userAgeBucket = '25-34 years';
+                break;
+            case 'AgeLevel4':
+                userAgeBucket = '35-44 years';
+                break;
+            case 'AgeLevel5':
+                userAgeBucket = '45-54 years';
+                break;
+            case 'AgeLevel6':
+                userAgeBucket = '55-64 years';
+                break;
+            case 'AgeLevel7':
+                userAgeBucket = '>65 years';
+                break;
+            case 'Undefined':
+                userAgeBucket = 'unknown';
+                break;
+        }
+        return userAgeBucket;
     }
 };
