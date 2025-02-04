@@ -6,7 +6,7 @@ module.exports = function (config) {
         url: window.location.href,
         evolvExecutionStart: performance.now()
     };
-    evolv.context.set('vz.performance', JSON.stringify(perf));
+    evolv.context.set('vz.performance', perf);
 
     // set the visitor ID
     // ==================
@@ -19,11 +19,13 @@ module.exports = function (config) {
             // console.log('result ECID:', result.identity.ECID);
             // console.log('result RegionId:', result.edge.regionId);
             evolv.context.set('vzOmni.visitorId', result.identity.ECID);
-        }).catch(function (error) {
+        }).catch(() => {
             // nothing
         });
     })
-    // .catch(() => console.warn('window.alloy not set within timeout'));
+    .catch(() => {
+        // console.warn('window.alloy not set within timeout');
+    });
 
     // set the time since last visit
     // =============================
@@ -55,7 +57,9 @@ module.exports = function (config) {
         }
         evolv.context.set('vz.lastVisitBucket', lastVisitBucket);
     })
-    // .catch(() => console.warn('window.vzdl.utils.lastVisit not set within timeout'));
+    .catch(() => {
+        // console.warn('window.vzdl.utils.lastVisit not set within timeout');
+    });
 
     // set visit start
     // ===============
@@ -106,7 +110,9 @@ module.exports = function (config) {
             evolv.context.set('vz.partOfDay', partOfDay);
         }
     })
-    // .catch(() => console.warn('window.vzdl.utils.dayOfWeek not set within timeout'));
+    .catch(() => {
+        // console.warn('window.vzdl.utils.dayOfWeek not set within timeout');
+    });
 
     // set billing state, OS, upgrade eligibility and age bucket of the customer
     // =========================================================================
@@ -152,7 +158,9 @@ module.exports = function (config) {
                 evolv.context.set('vz.userAgeBucket', userAgeBucket(evolvNode.userAgeBucket));
             }
         })
-        // .catch(() => console.warn('Data attibs not set within timeout'));
+        .catch(() => {
+            // console.warn('Data attibs not set within timeout');
+        });
     }
 
     // Support functions
